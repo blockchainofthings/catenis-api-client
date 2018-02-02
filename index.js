@@ -655,7 +655,7 @@ WsNotifyChannel.prototype.open = function (cb) {
             }
             else {
                 // Emit error event
-                self.emit('error', [error]);
+                self.emit('error', error);
 
                 if (this.readyState !== _WebSocket.CLOSING && this.readyState !== _WebSocket.CLOSED) {
                     // Close the connection
@@ -664,9 +664,9 @@ WsNotifyChannel.prototype.open = function (cb) {
             }
         });
 
-        this.ws.on('close', function (close) {
+        this.ws.on('close', function (closeCode, closeMessage) {
             // Emit close event
-            self.emit('close', [close.code, close.reason]);
+            self.emit('close', closeCode, closeMessage);
 
             // Terminate instantiated WebSocket
             self.ws = undefined;
