@@ -1,14 +1,10 @@
-/*
-* @Author: mahesh
-* @Date:   2017-12-20 20:48:11
-*/
-
 // Save local reference to required third-party libraries
 var _moment = require('moment'),
-	_sjcl = require('sjcl'),
+	_crypto = require('crypto'),
 	_heir = require('heir'),
     _EventEmitter = require('events'),
-    _http = require('request');
+    _http = require('request'),
+    _WebSocket = require('ws');
 
 var apiPath = '/api/',
     signVersionId = 'CTN1',
@@ -435,34 +431,77 @@ ApiClient.prototype.createWsNotifyChannel = function (eventName) {
 function postRequest(methodPath, params, data, result) {
     var reqParams = {
         url: this.rootApiEndPoint + '/' + formatMethodPath(methodPath, params),
-        contentType: "application/json",
-        processData: false,
-        data: JSON.stringify(data),
-        type: "POST",
-        success: result.success,
-        error: result.error
+        body: data,
+        json: true,
+        strictSSL: false
     };
 
-    signRequest.call(this, reqParams);
+    var signParams = {
+        url: reqParams.url,
+        type: 'POST',
+        data: JSON.stringify(data)
+    };
 
-    _jQuery.ajax(reqParams);
+    signRequest.call(this, signParams);
+
+    reqParams.headers = signParams.headers;
+
+    _http.post(reqParams, function (err, res, body) {
+        if (err || res.statusCode !== 200) {
+            var errorMessage = res.statusMessage;
+            if (body.message) {
+                errorMessage = body.message;
+            }
+            var error = err ? {
+                clientError: err
+            } : {
+                apiError: {
+                    httpStatusCode: res.statusCode,
+                    message: errorMessage
+                }
+            };
+            return result.error(error, 'error');
+        }
+        result.success(body, 'success');
+    });
 }
 
 function getRequest(methodPath, params, result) {
     var reqParams = {
         url: this.rootApiEndPoint + '/' + formatMethodPath(methodPath, params),
         type: "GET",
-        success: result.success,
-        error: result.error
+        json: true,
+        strictSSL: false
     };
 
-    signRequest.call(this, reqParams);
+    var signParams = {
+        url: reqParams.url,
+        type: 'GET'
+    };
 
-    _jQuery.ajax(reqParams);
+    signRequest.call(this, signParams);
+
+    reqParams.headers = signParams.headers;
+
+    _http.get(reqParams, function (err, res, body) {
+        if (err || res.statusCode !== 200) {
+            var error = {};
+            if (err) {
+                error.clientError = err;
+            }
+            else {
+                error.apiError = {
+                    httpStatusCode: res.statusCode,
+                    message: body.message ? body.message : res.statusMessage
+                };
+            }
+            return result.error(error, 'error');
+        }
+        result.success(body, 'success');
+    });
 }
 
 function signRequest(reqParams) {
-    console.log(reqParams);
     // Add timestamp header
     var now = _moment();
     var timestamp = _moment.utc(now).format('YYYYMMDDTHHmmss[Z]');
@@ -523,14 +562,11 @@ function signRequest(reqParams) {
 }
 
 function hashData(data) {
-    return _sjcl.codec.hex.fromBits(_sjcl.hash.sha256.hash(data));
+    return _crypto.createHash('sha256').update(data).digest('hex');
 }
 
 function signData(data, secret, hexEncode) {
-    var key = typeof secret === 'string' ? _sjcl.codec.utf8String.toBits(secret) : secret;
-    var result = (new _sjcl.misc.hmac(key)).encrypt(data);
-
-    return hexEncode ? _sjcl.codec.hex.fromBits(result) : result;
+    return _crypto.createHmac('sha256', secret).update(data).digest(hexEncode ? 'hex' : undefined);
 }
 
 function formatMethodPath(methodPath, params) {
@@ -587,11 +623,11 @@ WsNotifyChannel.prototype.open = function (cb) {
         //        has no authentication info) is created and sent by the WebSocket object
         var wsReq = getSignedWsConnectRequest.call(this);
 
-        this.ws = new WebSocket(wsReq.url, notifyWsSubprotocol);
+        this.ws = new _WebSocket(wsReq.url, [notifyWsSubprotocol]);
 
         var self = this;
 
-        this.ws.addEventListener('open', function (open) {
+        this.ws.on('open', function (open) {
             // Send authentication message
             var authMsgData = {};
 
@@ -606,8 +642,8 @@ WsNotifyChannel.prototype.open = function (cb) {
             }
         });
 
-        this.ws.addEventListener('error', function (error) {
-            if (this.readyState === WebSocket.CONNECTING) {
+        this.ws.on('error', function (error) {
+            if (this.readyState === _WebSocket.CONNECTING) {
                 // Error while trying to open WebSocket connection
                 if (typeof cb === 'function') {
                     // Call callback passing the error
@@ -619,33 +655,33 @@ WsNotifyChannel.prototype.open = function (cb) {
             }
             else {
                 // Emit error event
-                self.emit('error', [error]);
+                self.emit('error', error);
 
-                if (this.readyState !== WebSocket.CLOSING && this.readyState !== WebSocket.CLOSED) {
+                if (this.readyState !== _WebSocket.CLOSING && this.readyState !== _WebSocket.CLOSED) {
                     // Close the connection
                     this.close(1011);
                 }
             }
         });
 
-        this.ws.addEventListener('close', function (close) {
+        this.ws.on('close', function (closeCode, closeMessage) {
             // Emit close event
-            self.emit('close', [close.code, close.reason]);
+            self.emit('close', closeCode, closeMessage);
 
             // Terminate instantiated WebSocket
             self.ws = undefined;
         });
 
-        this.ws.addEventListener('message', function (message) {
+        this.ws.on('message', function (message) {
             // Emit message event passing the received data
-            self.emit('message', [message.data]);
+            self.emit('message', message);
         });
     }
 };
 
 WsNotifyChannel.prototype.close = function () {
     // Make sure that WebSocket is instantiated and open
-    if (this.ws !== undefined && this.ws.readyState === WebSocket.OPEN) {
+    if (this.ws !== undefined && this.ws.readyState === _WebSocket.OPEN) {
         // Close the WebSocket connection
         this.ws.close(1000);
     }

@@ -7,16 +7,16 @@ const CtnApiClient = require('./index.js');
 
 var device = {};
 var lastMsgId;
+var ctnApiClient;
 
 function initApiClient() {
     var env = {
 	    defaultDevice: {
-	        deviceId: 'dmM2Dz32agLSGsSuoxsR',
-	        apiAccessSecret: '99e3eb869b089e1f0e4ec4847aac01c6a82949eff19dbd10da9650eda525307ffc44715ae773d8cc8ca3f5515167b5ffd7cc16ffc567cb2c8a6e91013d0d1f38'
+	        deviceId: 'dLiZ68ZngyhdnacvxGvw',
+	        apiAccessSecret: '7e2fce24838209fc3bc3ed4b7659ee6e8fdada79c5fa91b625e8d816ac40c0cd3d473307f64f42e70cfc0115ea335425ee1a91dc72b9f5110b6aa557bfc4146f'
 	    },
 	    opts: {
-	        host: 'beta.catenis.io',
-	        secure: true
+	        environment: 'beta'
 	    }
 	}
 
@@ -40,7 +40,7 @@ function processMessageResult(err, data) {
         lastMsgId = data.data.messageId;
     }
 
-    processResult(err, data);
+    console.log(lastMsgId);
 }
 
 initApiClient();
