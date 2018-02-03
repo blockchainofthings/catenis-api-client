@@ -57,15 +57,6 @@ function ApiClient(deviceId, apiAccessSecret, options) {
     this.reqParams = {};
 }
 
-ApiClient.processReturn = function (callback, data, returnType) {
-    if (returnType === 'error') {
-        callback(data);
-    }
-    else if (returnType === 'success') {
-        callback(undefined, data);
-    }
-};
-
 // Log a message
 //
 //  Parameters:
@@ -85,7 +76,7 @@ ApiClient.prototype.logMessage = function (message, options, callback) {
         data.options = options;
     }
 
-    var procFunc = ApiClient.processReturn.bind(undefined, callback);
+    var procFunc = processReturn.bind(undefined, callback);
 
     postRequest.call(this, 'messages/log', undefined, data, {
         success: procFunc,
@@ -118,7 +109,7 @@ ApiClient.prototype.sendMessage = function (targetDevice, message, options, call
         data.options = options;
     }
 
-    var procFunc = ApiClient.processReturn.bind(undefined, callback);
+    var procFunc = processReturn.bind(undefined, callback);
 
     postRequest.call(this, 'messages/send', undefined, data, {
         success: procFunc,
@@ -145,7 +136,7 @@ ApiClient.prototype.readMessage = function (messageId, encoding, callback) {
         };
     }
 
-    var procFunc = ApiClient.processReturn.bind(undefined, callback);
+    var procFunc = processReturn.bind(undefined, callback);
 
     getRequest.call(this, 'messages/:messageId', params, {
         success: procFunc,
@@ -165,7 +156,7 @@ ApiClient.prototype.retrieveMessageContainer = function (messageId, callback) {
         ]
     };
 
-    var procFunc = ApiClient.processReturn.bind(undefined, callback);
+    var procFunc = processReturn.bind(undefined, callback);
 
     getRequest.call(this, 'messages/:messageId/container', params, {
         success: procFunc,
@@ -252,7 +243,7 @@ ApiClient.prototype.listMessages = function (options, callback) {
         }
     }
 
-    var procFunc = ApiClient.processReturn.bind(undefined, callback);
+    var procFunc = processReturn.bind(undefined, callback);
 
     getRequest.call(this, 'messages', params, {
         success: procFunc,
@@ -265,7 +256,7 @@ ApiClient.prototype.listMessages = function (options, callback) {
 //  Parameters:
 //    callback: [Function]  - Callback function
 ApiClient.prototype.listPermissionEvents = function (callback) {
-    var procFunc = ApiClient.processReturn.bind(undefined, callback);
+    var procFunc = processReturn.bind(undefined, callback);
 
     getRequest.call(this, 'permission/events', undefined, {
         success: procFunc,
@@ -285,7 +276,7 @@ ApiClient.prototype.retrievePermissionRights = function (eventName, callback) {
         ]
     };
 
-    var procFunc = ApiClient.processReturn.bind(undefined, callback);
+    var procFunc = processReturn.bind(undefined, callback);
 
     getRequest.call(this, 'permission/events/:eventName/rights', params, {
         success: procFunc,
@@ -343,7 +334,7 @@ ApiClient.prototype.setPermissionRights = function (eventName, rights, callback)
 
     var data = rights;
 
-    var procFunc = ApiClient.processReturn.bind(undefined, callback);
+    var procFunc = processReturn.bind(undefined, callback);
 
     postRequest.call(this, 'permission/events/:eventName/rights', params, data, {
         success: procFunc,
@@ -372,7 +363,7 @@ ApiClient.prototype.checkEffectivePermissionRight = function (eventName, deviceI
         };
     }
 
-    var procFunc = ApiClient.processReturn.bind(undefined, callback);
+    var procFunc = processReturn.bind(undefined, callback);
 
     getRequest.call(this, 'permission/events/:eventName/rights/:deviceId', params, {
         success: procFunc,
@@ -385,7 +376,7 @@ ApiClient.prototype.checkEffectivePermissionRight = function (eventName, deviceI
 //  Parameters:
 //    callback: [Function]  - Callback function
 ApiClient.prototype.listNotificationEvents = function (callback) {
-    var procFunc = ApiClient.processReturn.bind(undefined, callback);
+    var procFunc = processReturn.bind(undefined, callback);
 
     getRequest.call(this, 'notification/events', undefined, {
         success: procFunc,
@@ -412,7 +403,7 @@ ApiClient.prototype.retrieveDeviceIdentificationInfo = function (deviceId, isPro
         };
     }
 
-    var procFunc = ApiClient.processReturn.bind(undefined, callback);
+    var procFunc = processReturn.bind(undefined, callback);
 
     getRequest.call(this, 'devices/:deviceId', params, {
         success: procFunc,
@@ -427,6 +418,15 @@ ApiClient.prototype.retrieveDeviceIdentificationInfo = function (deviceId, isPro
 ApiClient.prototype.createWsNotifyChannel = function (eventName) {
     return new WsNotifyChannel(this, eventName);
 };
+
+function processReturn(callback, data, returnType) {
+    if (returnType === 'error') {
+        callback(data);
+    }
+    else if (returnType === 'success') {
+        callback(undefined, data);
+    }
+}
 
 function postRequest(methodPath, params, data, result) {
     var reqParams = {
