@@ -448,18 +448,16 @@ function postRequest(methodPath, params, data, result) {
 
     _http.post(reqParams, function (err, res, body) {
         if (err || res.statusCode !== 200) {
-            var errorMessage = res.statusMessage;
-            if (body.message) {
-                errorMessage = body.message;
+            var error = {};
+            if (err) {
+                error.clientError = err;
             }
-            var error = err ? {
-                clientError: err
-            } : {
-                apiError: {
+            else {
+                error.apiError = {
                     httpStatusCode: res.statusCode,
-                    message: errorMessage
-                }
-            };
+                    message: typeof body === 'object' && body.message ? body.message : res.statusMessage
+                };
+            }
             return result.error(error, 'error');
         }
         result.success(body, 'success');
@@ -492,7 +490,7 @@ function getRequest(methodPath, params, result) {
             else {
                 error.apiError = {
                     httpStatusCode: res.statusCode,
-                    message: body.message ? body.message : res.statusMessage
+                    message: typeof body === 'object' && body.message ? body.message : res.statusMessage
                 };
             }
             return result.error(error, 'error');

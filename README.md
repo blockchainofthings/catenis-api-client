@@ -14,13 +14,13 @@ npm install catenis-api-client
 
 Load catenis-api-client module.
 
-```shell
+```JavaScript
 var CtnApiClient = require('catenis-api-client');
 ```
 
 ### Instantiate the client
  
-```shell
+```JavaScript
 var ctnApiClient = new CtnApiClient(deviceId, apiAccessSecret, {
     environment: 'beta'
 });
@@ -28,7 +28,7 @@ var ctnApiClient = new CtnApiClient(deviceId, apiAccessSecret, {
 
 ### Logging (storing) a message to the blockchain
 
-```shell
+```JavaScript
 ctnApiClient.logMessage('My message', {
         encoding: 'utf8',
         encrypt: true,
@@ -46,7 +46,7 @@ ctnApiClient.logMessage('My message', {
 
 ### Sending a message to another device
 
-```shell
+```JavaScript
 ctnApiClient.sendMessage({
         id: targetDeviceId,
         isProdUniqueId: false
@@ -69,7 +69,7 @@ ctnApiClient.sendMessage({
 
 ### Reading a message
 
-```shell
+```JavaScript
 ctnApiClient.readMessage(messageId, 'utf8',
     function (err, data) {
         if (err) {
@@ -83,7 +83,7 @@ ctnApiClient.readMessage(messageId, 'utf8',
 
 ### Retrieving information about a message's container
 
-```shell
+```JavaScript
 ctnApiClient.retrieveMessageContainer(messageId,
     function (err, data) {
         if (err) {
@@ -97,7 +97,7 @@ ctnApiClient.retrieveMessageContainer(messageId,
 
 ### List messages
 
-```shell
+```JavaScript
 ctnApiClient.listMessages({
         action: 'send',
         direction: 'inbound',
@@ -116,7 +116,7 @@ ctnApiClient.listMessages({
 
 ### List permission events
 
-```shell
+```JavaScript
 ctnApiClient.listPermissionEvents(function (err, data) {
     if (err) {
         // Process error
@@ -129,7 +129,7 @@ ctnApiClient.listPermissionEvents(function (err, data) {
 
 ### Retrieve permission rights
 
-```shell
+```JavaScript
 ctnApiClient.retrievePermissionRights('receive_msg',
     function (err, data) {
         if (err) {
@@ -143,7 +143,7 @@ ctnApiClient.retrievePermissionRights('receive_msg',
 
 ### Set permission rights
 
-```shell
+```JavaScript
 ctnApiClient.setPermissionRights('receive_msg', {
         system: 'deny',
         catenisNode: {
@@ -176,7 +176,7 @@ ctnApiClient.setPermissionRights('receive_msg', {
 
 ### Check effective permission right
 
-```shell
+```JavaScript
 ctnApiClient.checkEffectivePermissionRight('receive_msg', deviceId, false,
     function (err, data) {
         if (err) {
@@ -190,7 +190,7 @@ ctnApiClient.checkEffectivePermissionRight('receive_msg', deviceId, false,
 
 ### List notification events
 
-```shell
+```JavaScript
 ctnApiClient.listNotificationEvents(function (err, data) {
     if (err) {
         // Process error
@@ -203,7 +203,7 @@ ctnApiClient.listNotificationEvents(function (err, data) {
 
 ### Retrieve device identification information
 
-```shell
+```JavaScript
 ctnApiClient.retrieveDeviceIdentificationInfo(deviceId, false,
     function (err, data) {
         if (err) {
@@ -219,13 +219,13 @@ ctnApiClient.retrieveDeviceIdentificationInfo(deviceId, false,
 
 Instantiate WebSocket notification channel object.
 
-```shell
+```JavaScript
 var wsNtfyChannel = ctnApiClient.createWsNotifyChannel(eventName);
 ```
 
 Add listeners.
 
-```shell
+```JavaScript
 wsNtfyChannel.addListener('error', function (error) {
     // Process error
 });
@@ -241,7 +241,7 @@ wsNtfyChannel.addListener('message', function (data) {
 
 Open notification channel.
 
-```shell
+```JavaScript
 wsNtfyChannel.open(function (err) {
     if (err) {
         // Process WebSocket connection error
@@ -250,6 +250,31 @@ wsNtfyChannel.open(function (err) {
         // Process indication that WebSocket connection is open
     }
 });
+```
+
+## Error handling
+
+Two types of error can take place when calling API methods: client or API error.
+
+They can be differentiated by the type of object turned, as follows:
+
+Client error object:
+
+```
+{
+    clientError: [Object]
+}
+```
+
+API error object:
+
+```
+{
+    apiError: {
+        httpStatusCode: [Number],
+        message: [String]
+    }
+}
 ```
 
 ## License
