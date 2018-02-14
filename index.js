@@ -424,7 +424,7 @@ function processReturn(callback, data, returnType) {
         callback(data);
     }
     else if (returnType === 'success') {
-        callback(undefined, data);
+        callback(undefined, typeof data === 'object' && data.data ? data.data : data);
     }
 }
 
