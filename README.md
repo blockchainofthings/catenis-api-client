@@ -166,7 +166,7 @@ ctnApiClient.listPermissionEvents(function (err, data) {
 ### Retrieve permission rights
 
 ```JavaScript
-ctnApiClient.retrievePermissionRights('receive_msg',
+ctnApiClient.retrievePermissionRights('receive-msg',
     function (err, data) {
         if (err) {
             // Process error
@@ -211,7 +211,7 @@ ctnApiClient.retrievePermissionRights('receive_msg',
 ### Set permission rights
 
 ```JavaScript
-ctnApiClient.setPermissionRights('receive_msg', {
+ctnApiClient.setPermissionRights('receive-msg', {
         system: 'deny',
         catenisNode: {
             allow: 'self'
@@ -245,7 +245,7 @@ ctnApiClient.setPermissionRights('receive_msg', {
 ### Check effective permission right
 
 ```JavaScript
-ctnApiClient.checkEffectivePermissionRight('receive_msg', deviceId, false,
+ctnApiClient.checkEffectivePermissionRight('receive-msg', deviceId, false,
     function (err, data) {
         if (err) {
             // Process error
