@@ -1,10 +1,11 @@
 // Save local reference to required third-party libraries
-var _moment = require('moment'),
-	_crypto = require('crypto'),
-	_heir = require('heir'),
-    _EventEmitter = require('events'),
-    _http = require('request'),
-    _WebSocket = require('ws');
+var moment = require('moment'),
+	crypto = require('crypto'),
+	heir = require('heir'),
+    EventEmitter = require('events'),
+    http = require('request'),
+    WebSocket = require('ws');
+var ApiVersion = require('./lib/ApiVersion.js');
 
 var apiPath = '/api/',
     signVersionId = 'CTN1',
@@ -25,7 +26,7 @@ var apiPath = '/api/',
 //      host: [String],             - (optional, default: catenis.io) Host name (with optional port) of target Catenis API server
 //      environment: [String],      - (optional, default: 'prod') Environment of target Catenis API server. Valid values: 'prod', 'beta'
 //      secure: [Boolean],          - (optional, default: true) Indicates whether a secure connection (HTTPS) should be used
-//      version: [String]           - (optional, default: 0.5) Version of Catenis API to target
+//      version: [String]           - (optional, default: '0.6') Version of Catenis API to target
 //    }
 function ApiClient(deviceId, apiAccessSecret, options) {
     var _host = 'catenis.io';
@@ -40,6 +41,11 @@ function ApiClient(deviceId, apiAccessSecret, options) {
         _version = typeof options.version === 'string' && options.version.length > 0 ? options.version : _version;
     }
 
+    var _apiVer = new ApiVersion(_version);
+    // Determine notification service version to use based on API version
+    var _notifyServiceVer = _apiVer.gte('0.6') ? '0.2' : '0.1';
+    var _notifyWSDispatcherVer = '0.1';
+
     this.host = _subdomain + _host;
     this.uriPrefix = (_secure ? 'https://' : 'http://') + this.host;
     this.apiBaseUriPath = apiPath + _version;
@@ -51,7 +57,7 @@ function ApiClient(deviceId, apiAccessSecret, options) {
     this.wsUriScheme = _secure ? 'wss://' : 'ws://';
     this.wsUriPrefix = this.wsUriScheme + this.host;
     this.qualifiedNotifyRooPath = apiPath + notifyRootPath;
-    this.wsNtfyBaseUriPath = this.qualifiedNotifyRooPath + (wsNtfyRootPath.length > 0 ? '/' : '') + wsNtfyRootPath;
+    this.wsNtfyBaseUriPath = this.qualifiedNotifyRooPath + '/' + _notifyServiceVer + (wsNtfyRootPath.length > 0 ? '/' : '') + wsNtfyRootPath + '/' + _notifyWSDispatcherVer;
     this.rootWsNtfyEndPoint = this.wsUriPrefix + this.wsNtfyBaseUriPath;
 
     this.reqParams = {};
@@ -731,7 +737,7 @@ function postRequest(methodPath, params, data, result) {
 
     reqParams.headers = signParams.headers;
 
-    _http.post(reqParams, function (err, res, body) {
+    http.post(reqParams, function (err, res, body) {
         if (err || res.statusCode !== 200) {
             var error = {};
             if (err) {
@@ -766,7 +772,7 @@ function getRequest(methodPath, params, result) {
 
     reqParams.headers = signParams.headers;
 
-    _http.get(reqParams, function (err, res, body) {
+    http.get(reqParams, function (err, res, body) {
         if (err || res.statusCode !== 200) {
             var error = {};
             if (err) {
@@ -786,8 +792,8 @@ function getRequest(methodPath, params, result) {
 
 function signRequest(reqParams) {
     // Add timestamp header
-    var now = _moment();
-    var timestamp = _moment.utc(now).format('YYYYMMDDTHHmmss[Z]');
+    var now = moment();
+    var timestamp = moment.utc(now).format('YYYYMMDDTHHmmss[Z]');
     var signDate,
         useSameSignKey;
 
@@ -845,11 +851,11 @@ function signRequest(reqParams) {
 }
 
 function hashData(data) {
-    return _crypto.createHash('sha256').update(data).digest('hex');
+    return crypto.createHash('sha256').update(data).digest('hex');
 }
 
 function signData(data, secret, hexEncode) {
-    return _crypto.createHmac('sha256', secret).update(data).digest(hexEncode ? 'hex' : undefined);
+    return crypto.createHmac('sha256', secret).update(data).digest(hexEncode ? 'hex' : undefined);
 }
 
 function formatMethodPath(methodPath, params) {
@@ -895,7 +901,7 @@ function WsNotifyChannel(apiClient, eventName) {
 }
 
 // Make NotifyChannel to inherit from EventEmitter
-_heir.inherit(WsNotifyChannel, _EventEmitter, true);
+heir.inherit(WsNotifyChannel, EventEmitter, true);
 
 WsNotifyChannel.prototype.open = function (cb) {
     // Make sure that WebSocket has not been instantiated yet
@@ -906,7 +912,7 @@ WsNotifyChannel.prototype.open = function (cb) {
         //        has no authentication info) is created and sent by the WebSocket object
         var wsReq = getSignedWsConnectRequest.call(this);
 
-        this.ws = new _WebSocket(wsReq.url, [notifyWsSubprotocol]);
+        this.ws = new WebSocket(wsReq.url, [notifyWsSubprotocol]);
 
         var self = this;
 
@@ -926,7 +932,7 @@ WsNotifyChannel.prototype.open = function (cb) {
         });
 
         this.ws.on('error', function (error) {
-            if (this.readyState === _WebSocket.CONNECTING) {
+            if (this.readyState === WebSocket.CONNECTING) {
                 // Error while trying to open WebSocket connection
                 if (typeof cb === 'function') {
                     // Call callback passing the error
@@ -940,7 +946,7 @@ WsNotifyChannel.prototype.open = function (cb) {
                 // Emit error event
                 self.emit('error', error);
 
-                if (this.readyState !== _WebSocket.CLOSING && this.readyState !== _WebSocket.CLOSED) {
+                if (this.readyState !== WebSocket.CLOSING && this.readyState !== WebSocket.CLOSED) {
                     // Close the connection
                     this.close(1011);
                 }
@@ -964,7 +970,7 @@ WsNotifyChannel.prototype.open = function (cb) {
 
 WsNotifyChannel.prototype.close = function () {
     // Make sure that WebSocket is instantiated and open
-    if (this.ws !== undefined && this.ws.readyState === _WebSocket.OPEN) {
+    if (this.ws !== undefined && this.ws.readyState === WebSocket.OPEN) {
         // Close the WebSocket connection
         this.ws.close(1000);
     }
