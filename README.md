@@ -536,6 +536,10 @@ API error object:
 }
 ```
 
+## Catenis Enterprise API Documentation
+
+For further information on the Catenis Enterprise API, please reference the [Catenis Enterprise API Documentation](https://catenis.com/docs/api).
+
 ## License
 
 This Node.js module is released under the [MIT License](LICENSE). Feel free to fork, and modify!
