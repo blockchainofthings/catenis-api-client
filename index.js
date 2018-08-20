@@ -24,7 +24,7 @@ var apiPath = '/api/',
 //    apiAccessSecret: [String]     - Catenis device's API access secret
 //    options [Object] (optional) {
 //      host: [String],             - (optional, default: catenis.io) Host name (with optional port) of target Catenis API server
-//      environment: [String],      - (optional, default: 'prod') Environment of target Catenis API server. Valid values: 'prod', 'beta'
+//      environment: [String],      - (optional, default: 'prod') Environment of target Catenis API server. Valid values: 'prod', 'sandbox' (or 'beta')
 //      secure: [Boolean],          - (optional, default: true) Indicates whether a secure connection (HTTPS) should be used
 //      version: [String]           - (optional, default: '0.6') Version of Catenis API to target
 //    }
@@ -36,7 +36,7 @@ function ApiClient(deviceId, apiAccessSecret, options) {
 
     if (typeof options === 'object' && options !== null) {
         _host = typeof options.host === 'string' && options.host.length > 0 ? options.host : _host;
-        _subdomain = options.environment === 'beta' ? 'beta.' : _subdomain;
+        _subdomain = options.environment === 'sandbox' || options.environment === 'beta' ? 'sandbox.' : _subdomain;
         _secure = typeof options.secure === 'boolean' ? options.secure : _secure;
         _version = typeof options.version === 'string' && options.version.length > 0 ? options.version : _version;
     }

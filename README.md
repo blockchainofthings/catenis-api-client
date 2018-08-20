@@ -2,7 +2,7 @@
 
 This module is used to make it easier to access the Catenis Enterprise API services from Node.js applications.
 
-This current release (1.2.1) targets version 0.6 of the Catenis Enterprise API.
+This current release (1.3.0) targets version 0.6 of the Catenis Enterprise API.
 
 ## Installation
 
@@ -22,7 +22,7 @@ var CtnApiClient = require('catenis-api-client');
  
 ```JavaScript
 var ctnApiClient = new CtnApiClient(deviceId, apiAccessSecret, {
-    environment: 'beta'
+    environment: 'sandbox'
 });
 ```
 
