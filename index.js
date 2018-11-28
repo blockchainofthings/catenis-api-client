@@ -352,7 +352,7 @@ ApiClient.prototype.retrievePermissionRights = function (eventName, callback) {
 //      client: {   - (optional) Permission rights to be attributed at the client level for the specified event
 //        allow: [Array(String)|String],  - (optional) List of IDs (or a single ID) of clients to give allow right
 //                                        -  Can optionally include the value "self" to refer to the ID of the client to which the device belongs
-//        deny: [Array(String)|String]    - (optional) List of IDs (or a single ID) of clients to give deny right
+//        deny: [Array(String)|String],   - (optional) List of IDs (or a single ID) of clients to give deny right
 //                                        -  Can optionally include the value "self" to refer to the ID of the client to which the device belongs
 //        none: [Array(String)|String]    - (optional) List of IDs (or a single ID) of clients the rights of which should be removed.
 //                                        -  Can optionally include the value "self" to refer to the ID of the client to which the device belongs
