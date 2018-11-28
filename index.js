@@ -793,18 +793,18 @@ function getRequest(methodPath, params, result) {
 function signRequest(reqParams) {
     // Add timestamp header
     var now = moment();
-    var timestamp = moment.utc(now).format('YYYYMMDDTHHmmss[Z]');
-    var signDate,
-        useSameSignKey;
+    var timestamp = now.utc().format('YYYYMMDDTHHmmss[Z]');
+    var useSameSignKey;
 
-    if (this.lastSignDate && now.diff(this.lastSignDate) < signValidDays) {
-        signDate = this.lastSignDate;
+    if (this.lastSignDate && now.diff(this.lastSignDate, 'days') < signValidDays) {
         useSameSignKey = !!this.lastSignKey;
     }
     else {
-        signDate = this.lastSignDate = now.utc().format('YYYYMMDD');
+        this.lastSignDate = now;
         useSameSignKey = false;
     }
+
+    var signDate = this.lastSignDate.utc().format('YYYYMMDD');
 
     reqParams.headers = reqParams.headers || {};
     reqParams.headers[timestampHdr] = timestamp;
