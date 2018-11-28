@@ -95,7 +95,7 @@ ApiClient.prototype.logMessage = function (message, options, callback) {
 //  Parameters:
 //    targetDevice: [Object] {
 //      id: [String],               - ID of target device. Should be Catenis device ID unless isProdUniqueId is true
-//      isProdUniqueId: [Boolean]   - (optional, default: false) Indicate whether supply ID is a product unique ID (otherwise, if should be a Catenis device Id)
+//      isProdUniqueId: [Boolean]   - (optional, default: false) Indicate whether supplied ID is a product unique ID (otherwise, it should be a Catenis device Id)
 //    },
 //    message: [String],            - The message to send
 //    options: [Object] (optional) {
@@ -203,7 +203,7 @@ ApiClient.prototype.retrieveMessageContainer = function (messageId, callback) {
 //                                          which the messages intended to be retrieved has been: logged, in case of messages logged
 //                                          by the device that issued the request (action = "log"); sent, in case of messages sent from the current
 //                                          device (action = "send" direction = "outbound"); or received, in case of messages sent to
-//                                          he device that issued the request (action = "send" and direction = "inbound")
+//                                          the device that issued the request (action = "send" and direction = "inbound")
 //    }
 //    callback: [Function]  - Callback function
 ApiClient.prototype.listMessages = function (options, callback) {
@@ -819,7 +819,7 @@ function signRequest(reqParams) {
     confReq += essentialHeaders + '\n';
     confReq += hashData(reqParams.data || '') + '\n';
 
-    // Second step: assemble string to find
+    // Second step: assemble string to sign
     var strToSign = signMethodId + '\n';
     strToSign += timestamp + '\n';
 
