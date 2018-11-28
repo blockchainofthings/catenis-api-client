@@ -719,9 +719,16 @@ function processReturn(callback, data, returnType) {
     }
 }
 
+function assembleMethodEndPointUrl(methodPath, params) {
+    // Make sure that duplicate slashes that might occur in the URL (due to empty URL parameters)
+    //  are reduced to a single slash so the URL used for signing is not different from the
+    //  actual URL of the sent request
+    return (this.rootApiEndPoint + '/' + formatMethodPath(methodPath, params)).replace(/\/{2,}/g,'/');
+}
+
 function postRequest(methodPath, params, data, result) {
     var reqParams = {
-        url: this.rootApiEndPoint + '/' + formatMethodPath(methodPath, params),
+        url: assembleMethodEndPointUrl.call(this, methodPath, params),
         body: data,
         json: true,
         strictSSL: false
@@ -757,7 +764,7 @@ function postRequest(methodPath, params, data, result) {
 
 function getRequest(methodPath, params, result) {
     var reqParams = {
-        url: this.rootApiEndPoint + '/' + formatMethodPath(methodPath, params),
+        url: assembleMethodEndPointUrl.call(this, methodPath, params),
         type: "GET",
         json: true,
         strictSSL: false
