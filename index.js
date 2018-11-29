@@ -219,8 +219,8 @@ ApiClient.prototype.listMessages = function (options, callback) {
         }
 
         if (Array.isArray(options.fromDevices)) {
-            var fromDeviceIds = '';
-            var fromDeviceProdUniqueIds = '';
+            var fromDeviceIds = [];
+            var fromDeviceProdUniqueIds = [];
 
             options.fromDevices.forEach(function (device) {
                 if (typeof device === 'object' && device !== null && typeof device.id === 'string' && device.id.length > 0) {
@@ -245,8 +245,8 @@ ApiClient.prototype.listMessages = function (options, callback) {
         }
 
         if (Array.isArray(options.toDevices)) {
-            var toDeviceIds = '';
-            var toDeviceProdUniqueIds = '';
+            var toDeviceIds = [];
+            var toDeviceProdUniqueIds = [];
 
             options.toDevices.forEach(function (device) {
                 if (typeof device === 'object' && device !== null && typeof device.id === 'string' && device.id.length > 0) {
