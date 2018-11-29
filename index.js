@@ -6,6 +6,7 @@ var moment = require('moment'),
     http = require('request'),
     WebSocket = require('ws');
 var ApiVersion = require('./lib/ApiVersion.js');
+var CatenisApiError = require('./lib/CatenisApiError.js');
 
 var apiPath = '/api/',
     signVersionId = 'CTN1',
@@ -808,15 +809,12 @@ function postRequest(methodPath, params, data, result) {
 
     http.post(reqParams, function (err, res, body) {
         if (err || res.statusCode !== 200) {
-            var error = {};
+            var error;
             if (err) {
-                error.clientError = err;
+                error = err;
             }
             else {
-                error.apiError = {
-                    httpStatusCode: res.statusCode,
-                    message: typeof body === 'object' && body.message ? body.message : res.statusMessage
-                };
+                error = new CatenisApiError(res.statusMessage, res.statusCode, typeof body === 'object' && body.message ? body.message : undefined);
             }
             return result.error(error, 'error');
         }
@@ -843,15 +841,12 @@ function getRequest(methodPath, params, result) {
 
     http.get(reqParams, function (err, res, body) {
         if (err || res.statusCode !== 200) {
-            var error = {};
+            var error;
             if (err) {
-                error.clientError = err;
+                error = err;
             }
             else {
-                error.apiError = {
-                    httpStatusCode: res.statusCode,
-                    message: typeof body === 'object' && body.message ? body.message : res.statusMessage
-                };
+                error = new CatenisApiError(res.statusMessage, res.statusCode, typeof body === 'object' && body.message ? body.message : undefined);
             }
             return result.error(error, 'error');
         }
