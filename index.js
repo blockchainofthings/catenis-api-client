@@ -48,7 +48,7 @@ function ApiClient(deviceId, apiAccessSecret, options) {
 
     this.host = _subdomain + _host;
     var uriPrefix = (_secure ? 'https://' : 'http://') + this.host;
-    var apiBaseUriPath = apiPath + _version;
+    var apiBaseUriPath = apiPath + _version + '/';
     this.rootApiEndPoint = uriPrefix + apiBaseUriPath;
     this.deviceId = deviceId;
     this.apiAccessSecret = apiAccessSecret;
@@ -785,7 +785,7 @@ function assembleMethodEndPointUrl(methodPath, params) {
     // Make sure that duplicate slashes that might occur in the URL (due to empty URL parameters)
     //  are reduced to a single slash so the URL used for signing is not different from the
     //  actual URL of the sent request
-    return (this.rootApiEndPoint + '/' + formatMethodPath(methodPath, params)).replace(/\/{2,}/g,'/');
+    return this.rootApiEndPoint + formatMethodPath(methodPath, params).replace(/\/{2,}/g,'/');
 }
 
 function postRequest(methodPath, params, data, result) {
