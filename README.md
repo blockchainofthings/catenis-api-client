@@ -146,6 +146,13 @@ ctnApiClient.listMessages({
 });
 ```
 
+> **Note**: the fields of the *options* parameter of the *listMessages* method are slightly different than the ones
+>taken by the List Messages Catenis API method. In particular, fields `fromDeviceIds` and `fromDeviceProdUniqueIds`,
+>and fields `toDeviceIds` and `toDeviceProdUniqueIds` are replaced by fields `fromDevices` and `toDevices`,
+>respectively. Those fields take an array of device ID objects, which is the same type of object taken by the first
+>parameter (`targetDevice`) of the *sendMessage* method. Also, the date fields, `startDate` and `endDate`, accept not
+>only strings containing ISO8601 formatted dates/times but also *Date* objects.
+
 ### Issuing an amount of a new asset
 
 ```JavaScript
@@ -303,6 +310,10 @@ ctnApiClient.retrieveAssetIssuanceHistory(assetId, '20170101T000000Z', null,
         }
 });
 ```
+
+> **Note**: the parameters of the *retrieveAssetIssuanceHistory* method are slightly different than the ones taken by
+>the Retrieve Asset Issuance History Catenis API method. In particular, the date fields, `startDate` and `endDate`,
+>accept not only strings containing ISO8601 formatted dates/times but also *Date* objects.
 
 ### Listing devices that currently hold any amount of a given asset
 
@@ -515,25 +526,52 @@ wsNtfyChannel.open(function (err) {
 
 Two types of error can take place when calling API methods: client or API error.
 
-They can be differentiated by the type of object turned, as follows:
+Client errors return generic error objects.
 
-Client error object:
+API errors, on the other hand, return a custom **CatenisApiError** object.
+
+**CatenisApiError** objects are extended from Javascript's standard *Error* object, so they share the same
+ characteristics with the following exceptions:
+
+- The the value of the *name* field is set to `CatenisApiError`
+- It has the following additional fields: *httpStatusMessage*, *httpStatusCode*, and *ctnErrorMessage*
+
+> **Note**: the *ctnErrorMessage* field of the CatenisApiError object contains the error message returned by the
+ Catenis system. However, there might be cases where that field is **undefined**.
+
+Usage example:
+
+```JavaScript
+var CatenisApiError = require('catenis-api-client/lib/CatenisApiError');
+
+ctnApiClient.readMessage('INVALID_MSG_ID', null,
+    function (err, data) {
+        if (err) {
+            if (err instanceof CatenisApiError) {
+                // Catenis API error
+                console.log('HTTP status code:', err.httpStatusCode);
+                console.log('HTTP status message:', err.httpStatusMessage);
+                console.log('Catenis error message:', err.ctnErrorMessage);
+                console.log('Compiled error message:', err.message);
+            }
+            else {
+                // Client error
+                console.log(err);
+            }
+        }
+        else {
+            // Process returned data
+        }
+});
+```
+
+Expected result:
 
 ```
-{
-    clientError: [Object]
-}
-```
-
-API error object:
-
-```
-{
-    apiError: {
-        httpStatusCode: [Number],
-        message: [String]
-    }
-}
+HTTP status code: 400
+HTTP status message: Bad Request
+Catenis error message: Invalid message ID
+Compiled error message: Error returned from Catenis API endpoint: [400] Invalid message ID
 ```
 
 ## Catenis Enterprise API Documentation
