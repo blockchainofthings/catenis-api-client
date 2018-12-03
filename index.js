@@ -173,36 +173,36 @@ ApiClient.prototype.retrieveMessageContainer = function (messageId, callback) {
 //
 //  Parameters:
 //    options: [Object] (optional) {
-//      action: [String],                - (optional, default: "any") - One of the following values specifying the action originally performed on
-//                                          the messages intended to be retrieved: "log"|"send"|"any"
-//      direction [String],              - (optional, default: "any") - One of the following values specifying the direction of the sent messages
-//                                          intended to be retrieve: "inbound"|"outbound"|"any". Note that this option only applies to
-//                                          sent messages (action = "send"). "inbound" indicates messages sent to the device that issued
-//                                          the request, while "outbound" indicates messages sent from the device that issued the request
-//      fromDevices: [Array(Object)] [{  - (optional) - List of devices from which the messages intended to be retrieved had been sent. Note that this
-//                                          option only applies to messages sent to the device that issued the request (action = "send" and direction = "inbound")
-//          id: [String],                   - ID of the device. Can optionally be replaced with value "self" to refer to the ID of the device itself
-//          isProdUniqueId [Boolean]        - (optional, default: false) Indicate whether supplied ID is a product unique ID (otherwise, if should be a Catenis device Id)
+//      action: [String],                 - (optional, default: "any") - One of the following values specifying the action originally performed on
+//                                           the messages intended to be retrieved: "log"|"send"|"any"
+//      direction: [String],              - (optional, default: "any") - One of the following values specifying the direction of the sent messages
+//                                           intended to be retrieve: "inbound"|"outbound"|"any". Note that this option only applies to
+//                                           sent messages (action = "send"). "inbound" indicates messages sent to the device that issued
+//                                           the request, while "outbound" indicates messages sent from the device that issued the request
+//      fromDevices: [Array(Object)] [{   - (optional) - List of devices from which the messages intended to be retrieved had been sent. Note that this
+//                                           option only applies to messages sent to the device that issued the request (action = "send" and direction = "inbound")
+//          id: [String],                    - ID of the device. Can optionally be replaced with value "self" to refer to the ID of the device itself
+//          isProdUniqueId [Boolean]         - (optional, default: false) Indicate whether supplied ID is a product unique ID (otherwise, if should be a Catenis device Id)
 //      }],
-//      toDevices: [Array(Object)] [{    - (optional) - List of devices to which the messages intended to be retrieved had been sent. Note that this
-//                                          option only applies to messages sent to the device that issued the request (action = "send" and direction = "inbound")
-//          id: [String],                   - ID of the device. Can optionally be replaced with value "self" to refer to the ID of the device itself
-//          isProdUniqueId [Boolean]        - (optional, default: false) Indicate whether supplied ID is a product unique ID (otherwise, if should be a Catenis device Id)
+//      toDevices: [Array(Object)] [{     - (optional) - List of devices to which the messages intended to be retrieved had been sent. Note that this
+//                                           option only applies to messages sent to the device that issued the request (action = "send" and direction = "inbound")
+//          id: [String],                    - ID of the device. Can optionally be replaced with value "self" to refer to the ID of the device itself
+//          isProdUniqueId [Boolean]         - (optional, default: false) Indicate whether supplied ID is a product unique ID (otherwise, if should be a Catenis device Id)
 //      }],
-//      readState: [String]              - (optional, default: "any") - One of the following values indicating the current read state of the
-//                                          the messages intended to be retrieved: "unread"|"read"|"any".
-//      startDate: [String|Object(Date)] - (optional) - Date and time specifying the lower boundary of the time frame within
-//                                          which the messages intended to be retrieved has been: logged, in case of messages logged
-//                                          by the device that issued the request (action = "log"); sent, in case of messages sent from the current
-//                                          device (action = "send" direction = "outbound"); or received, in case of messages sent to
-//                                          the device that issued the request (action = "send" and direction = "inbound")
-//                                          Note: if a string is passed, it should be an ISO8601 formatter date/time
-//      endDate: [String|Object(Date)]   - (optional) - Date and time specifying the upper boundary of the time frame within
-//                                          which the messages intended to be retrieved has been: logged, in case of messages logged
-//                                          by the device that issued the request (action = "log"); sent, in case of messages sent from the current
-//                                          device (action = "send" direction = "outbound"); or received, in case of messages sent to
-//                                          the device that issued the request (action = "send" and direction = "inbound")
-//                                          Note: if a string is passed, it should be an ISO8601 formatter date/time
+//      readState: [String],              - (optional, default: "any") - One of the following values indicating the current read state of the
+//                                           the messages intended to be retrieved: "unread"|"read"|"any".
+//      startDate: [String|Object(Date)], - (optional) - Date and time specifying the lower boundary of the time frame within
+//                                           which the messages intended to be retrieved has been: logged, in case of messages logged
+//                                           by the device that issued the request (action = "log"); sent, in case of messages sent from the current
+//                                           device (action = "send" direction = "outbound"); or received, in case of messages sent to
+//                                           the device that issued the request (action = "send" and direction = "inbound")
+//                                           Note: if a string is passed, it should be an ISO8601 formatter date/time
+//      endDate: [String|Object(Date)]    - (optional) - Date and time specifying the upper boundary of the time frame within
+//                                           which the messages intended to be retrieved has been: logged, in case of messages logged
+//                                           by the device that issued the request (action = "log"); sent, in case of messages sent from the current
+//                                           device (action = "send" direction = "outbound"); or received, in case of messages sent to
+//                                           the device that issued the request (action = "send" and direction = "inbound")
+//                                           Note: if a string is passed, it should be an ISO8601 formatter date/time
 //    }
 //    callback: [Function]  - Callback function
 ApiClient.prototype.listMessages = function (options, callback) {
@@ -675,14 +675,14 @@ ApiClient.prototype.listIssuedAssets = function (limit, skip, callback) {
 //
 //  Parameters:
 //    assetId [String] - ID of asset to retrieve issuance history
-//    startDate: [String|Object(Date)] - (optional) Date and time specifying the lower boundary of the time frame within
-//                                        which the issuance events intended to be retrieved have occurred. The returned
-//                                        issuance events must have occurred not before that date/time
-//                                        Note: if a string is passed, it should be an ISO8601 formatter date/time
-//    endDate: [String|Object(Date)]   - (optional) Date and time specifying the upper boundary of the time frame within
-//                                        which the issuance events intended to be retrieved have occurred. The returned
-//                                        issuance events must have occurred not after that date/time
-//                                        Note: if a string is passed, it should be an ISO8601 formatter date/time
+//    startDate [String|Object(Date)] - (optional) Date and time specifying the lower boundary of the time frame within
+//                                       which the issuance events intended to be retrieved have occurred. The returned
+//                                       issuance events must have occurred not before that date/time
+//                                       Note: if a string is passed, it should be an ISO8601 formatter date/time
+//    endDate [String|Object(Date)]   - (optional) Date and time specifying the upper boundary of the time frame within
+//                                       which the issuance events intended to be retrieved have occurred. The returned
+//                                       issuance events must have occurred not after that date/time
+//                                       Note: if a string is passed, it should be an ISO8601 formatter date/time
 //    callback: [Function]      - Callback function
 ApiClient.prototype.retrieveAssetIssuanceHistory = function (assetId, startDate, endDate, callback) {
     var params = {
