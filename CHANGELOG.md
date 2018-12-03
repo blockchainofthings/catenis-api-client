@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.0.0] - 2018-11-29
+## [2.0.0] - 2018-12-03
 
 ### Breaking changes
 - Changed interface of *listMessages* method: fields `fromDeviceIds`, `fromDeviceProdUniqueIds`, `toDeviceIds`,
