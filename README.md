@@ -15,13 +15,13 @@ npm install catenis-api-client
 Load catenis-api-client module.
 
 ```JavaScript
-var CtnApiClient = require('catenis-api-client');
+var CatenisApiClient = require('catenis-api-client');
 ```
 
 ### Instantiate the client
  
 ```JavaScript
-var ctnApiClient = new CtnApiClient(deviceId, apiAccessSecret, {
+var ctnApiClient = new CatenisApiClient(deviceId, apiAccessSecret, {
     environment: 'sandbox'
 });
 ```
