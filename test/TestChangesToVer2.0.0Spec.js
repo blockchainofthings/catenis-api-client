@@ -1,16 +1,49 @@
+var readline = require('readline');
 var CatenisApiClient = require('catenis-api-client');
 var CatenisApiError = require('catenis-api-client/lib/CatenisApiError');
 
-// Instantiate Catenis API client
-var apiClient = new CatenisApiClient(
-    'd8YpQ7jgPBJEkBrnvp58',
-    '61281120a92dc6267af11170d161f64478b0a852f3cce4286b8a1b82afd2de7077472b6f7b93b6d554295d859815a37cb89f4f875b7aaeb0bd2babd9531c6883', {
-        host: 'localhost:3000',
-        secure: false
-    }
-);
+xdescribe('Test changes to Catenis API client ver. 2.0.0.', function  () {
+    var rl;
+    var device1 = {
+        id: 'd8YpQ7jgPBJEkBrnvp58'
+    };
+    var accessKey1;
+    var apiClient;
 
-describe('Test changes to Catenis API client ver. 2.0.0.', function  () {
+    beforeAll(function (done) {
+        rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+
+        rl.question('Device #1 ID: [' + device1.id + '] ', function (deviceId) {
+            if (deviceId) {
+                device1.id = deviceId;
+            }
+
+            rl.question('Device #1 API access key: ', function (accessKey) {
+                accessKey1 = accessKey;
+
+                // Instantiate Catenis API clients
+                apiClient = new CatenisApiClient(
+                    device1.id,
+                    accessKey1, {
+                        host: 'localhost:3000',
+                        secure: false
+                    }
+                );
+
+                done();
+            });
+        });
+    }, 60000);
+
+    afterAll(function () {
+        if (rl) {
+            rl.close();
+        }
+    });
+
     it('Call API method with empty URL parameter', function (done) {
         apiClient.retrieveMessageContainer('', function (error, result) {
             if (error) {
