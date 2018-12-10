@@ -196,13 +196,13 @@ ApiClient.prototype.retrieveMessageContainer = function (messageId, callback) {
 //                                           by the device that issued the request (action = "log"); sent, in case of messages sent from the current
 //                                           device (action = "send" direction = "outbound"); or received, in case of messages sent to
 //                                           the device that issued the request (action = "send" and direction = "inbound")
-//                                           Note: if a string is passed, it should be an ISO8601 formatter date/time
+//                                           Note: if a string is passed, it should be an ISO8601 formatted date/time
 //      endDate: [String|Object(Date)]    - (optional) - Date and time specifying the upper boundary of the time frame within
 //                                           which the messages intended to be retrieved has been: logged, in case of messages logged
 //                                           by the device that issued the request (action = "log"); sent, in case of messages sent from the current
 //                                           device (action = "send" direction = "outbound"); or received, in case of messages sent to
 //                                           the device that issued the request (action = "send" and direction = "inbound")
-//                                           Note: if a string is passed, it should be an ISO8601 formatter date/time
+//                                           Note: if a string is passed, it should be an ISO8601 formatted date/time
 //    }
 //    callback: [Function]  - Callback function
 ApiClient.prototype.listMessages = function (options, callback) {
@@ -564,7 +564,7 @@ ApiClient.prototype.transferAsset = function (assetId, amount, receivingDevice, 
 // Retrieve information about a given asset
 //
 //  Parameters:
-//    assetId [String]     - ID of asset to transfer an amount of it
+//    assetId [String]     - ID of asset to retrieve information
 //    callback: [Function] - Callback function
 ApiClient.prototype.retrieveAssetInfo = function (assetId, callback) {
     var params = {
@@ -678,11 +678,11 @@ ApiClient.prototype.listIssuedAssets = function (limit, skip, callback) {
 //    startDate [String|Object(Date)] - (optional) Date and time specifying the lower boundary of the time frame within
 //                                       which the issuance events intended to be retrieved have occurred. The returned
 //                                       issuance events must have occurred not before that date/time
-//                                       Note: if a string is passed, it should be an ISO8601 formatter date/time
+//                                       Note: if a string is passed, it should be an ISO8601 formatted date/time
 //    endDate [String|Object(Date)]   - (optional) Date and time specifying the upper boundary of the time frame within
 //                                       which the issuance events intended to be retrieved have occurred. The returned
 //                                       issuance events must have occurred not after that date/time
-//                                       Note: if a string is passed, it should be an ISO8601 formatter date/time
+//                                       Note: if a string is passed, it should be an ISO8601 formatted date/time
 //    callback: [Function]      - Callback function
 ApiClient.prototype.retrieveAssetIssuanceHistory = function (assetId, startDate, endDate, callback) {
     var params = {
@@ -732,7 +732,7 @@ ApiClient.prototype.retrieveAssetIssuanceHistory = function (assetId, startDate,
 // List devices that currently hold any amount of a given asset
 //
 //  Parameters:
-//    assetId [String]     - ID of asset to retrieve issuance history
+//    assetId [String]     - ID of asset to get holders
 //    limit: [Number]      - (optional, default: 500) Maximum number of list items that should be returned
 //    skip: [Number]       - (optional, default: 0) Number of list items that should be skipped (from beginning of list) and not returned
 //    callback: [Function] - Callback function
@@ -970,9 +970,9 @@ heir.inherit(WsNotifyChannel, EventEmitter, true);
 WsNotifyChannel.prototype.open = function (cb) {
     // Make sure that WebSocket has not been instantiated yet
     if (this.ws === undefined) {
-        // NOTE: this request is only used to retrieve that data used for authentication,
-        //        which is done by sending ta message right after the connection is open.
-        //        The actual request used to establish the WebSocket connection is (which
+        // NOTE: this request is only used to retrieve the data used for authentication,
+        //        which is done by sending the message right after the connection is open.
+        //        The actual request used to establish the WebSocket connection (which
         //        has no authentication info) is created and sent by the WebSocket object
         var wsReq = getSignedWsConnectRequest.call(this);
 
