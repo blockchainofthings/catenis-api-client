@@ -80,7 +80,6 @@ describe('Test changes to Catenis API client ver. 2.1.0.', function  () {
 
         wsNotifyChannel.addListener('notify', function(data) {
             expect(data).toEqual(jasmine.any(Object));
-            console.log('Notification data:', data);
             done();
         });
 
