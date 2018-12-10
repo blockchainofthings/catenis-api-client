@@ -1026,8 +1026,12 @@ WsNotifyChannel.prototype.open = function (cb) {
         });
 
         this.ws.on('message', function (message) {
-            // Emit message event passing the received data
+            // Emit message event passing the received data (as a JSON string)
+            // NOTE: this event is DEPRECATED (in favour of the new 'notify' event) and should be
+            //        removed in future versions of the library
             self.emit('message', message);
+            // Emit notify event passing the received data (as a deserialized JSON object)
+            self.emit('notify', JSON.parse(message));
         });
     }
 };
