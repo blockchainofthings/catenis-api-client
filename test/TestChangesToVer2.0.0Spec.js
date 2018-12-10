@@ -24,7 +24,7 @@ xdescribe('Test changes to Catenis API client ver. 2.0.0.', function  () {
             rl.question('Device #1 API access key: ', function (accessKey) {
                 accessKey1 = accessKey;
 
-                // Instantiate Catenis API clients
+                // Instantiate Catenis API client
                 apiClient = new CatenisApiClient(
                     device1.id,
                     accessKey1, {
