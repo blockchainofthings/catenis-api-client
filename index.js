@@ -73,6 +73,11 @@ function ApiClient(deviceId, apiAccessSecret, options) {
 //    }
 //    callback: [Function]    - Callback function
 ApiClient.prototype.logMessage = function (message, options, callback) {
+    if (typeof options === 'function') {
+        callback = options;
+        options = undefined;
+    }
+
     var data = {
         message: message
     };
@@ -105,6 +110,11 @@ ApiClient.prototype.logMessage = function (message, options, callback) {
 //    }
 //    callback: [Function]          - Callback function
 ApiClient.prototype.sendMessage = function (targetDevice, message, options, callback) {
+    if (typeof options === 'function') {
+        callback = options;
+        options = undefined;
+    }
+
     var data = {
         message: message,
         targetDevice: targetDevice
@@ -129,6 +139,11 @@ ApiClient.prototype.sendMessage = function (targetDevice, message, options, call
 //    encoding: [String]    - (optional, default: "utf8") One of the following values identifying the encoding that should be used for the returned message: utf8|base64|hex
 //    callback: [Function]  - Callback function
 ApiClient.prototype.readMessage = function (messageId, encoding, callback) {
+    if (typeof encoding === 'function') {
+        callback = encoding;
+        encoding = undefined;
+    }
+
     var params = {
         url: [
             messageId
@@ -206,6 +221,11 @@ ApiClient.prototype.retrieveMessageContainer = function (messageId, callback) {
 //    }
 //    callback: [Function]  - Callback function
 ApiClient.prototype.listMessages = function (options, callback) {
+    if (typeof options === 'function') {
+        callback = options;
+        options = undefined;
+    }
+
     var params = {};
 
     if (options) {
@@ -401,6 +421,11 @@ ApiClient.prototype.setPermissionRights = function (eventName, rights, callback)
 //    isProdUniqueId: [Boolean] - (optional, default: false) Indicates whether the deviceId parameter should be interpreted as a product unique ID (otherwise, it is interpreted as a Catenis device Id)
 //    callback: [Function]      - Callback function
 ApiClient.prototype.checkEffectivePermissionRight = function (eventName, deviceId, isProdUniqueId, callback) {
+    if (typeof isProdUniqueId === 'function') {
+        callback = isProdUniqueId;
+        isProdUniqueId = undefined;
+    }
+
     var params = {
         url: [
             eventName,
@@ -442,6 +467,11 @@ ApiClient.prototype.listNotificationEvents = function (callback) {
 //    isProdUniqueId: [Boolean] - (optional, default: false) Indicates whether the deviceId parameter should be interpreted as a product unique ID (otherwise, it is interpreted as a Catenis device Id)
 //    callback: [Function]      - Callback function
 ApiClient.prototype.retrieveDeviceIdentificationInfo = function (deviceId, isProdUniqueId, callback) {
+    if (typeof isProdUniqueId === 'function') {
+        callback = isProdUniqueId;
+        isProdUniqueId = undefined;
+    }
+
     var params = {
         url: [
             deviceId
@@ -479,6 +509,11 @@ ApiClient.prototype.retrieveDeviceIdentificationInfo = function (deviceId, isPro
 //    }
 //    callback: [Function] - Callback function
 ApiClient.prototype.issueAsset = function (assetInfo, amount, holdingDevice, callback) {
+    if (typeof holdingDevice === 'function') {
+        callback = holdingDevice;
+        holdingDevice = undefined;
+    }
+
     var data = {
         assetInfo: assetInfo,
         amount: amount
@@ -508,6 +543,11 @@ ApiClient.prototype.issueAsset = function (assetInfo, amount, holdingDevice, cal
 //    }
 //    callback: [Function] - Callback function
 ApiClient.prototype.reissueAsset = function (assetId, amount, holdingDevice, callback) {
+    if (typeof holdingDevice === 'function') {
+        callback = holdingDevice;
+        holdingDevice = undefined;
+    }
+
     var params = {
         url: [
             assetId
@@ -608,6 +648,16 @@ ApiClient.prototype.getAssetBalance = function (assetId, callback) {
 //    skip: [Number]       - (optional, default: 0) Number of list items that should be skipped (from beginning of list) and not returned
 //    callback: [Function] - Callback function
 ApiClient.prototype.listOwnedAssets = function (limit, skip, callback) {
+    if (typeof limit === 'function') {
+        callback = limit;
+        limit = undefined;
+        skip = undefined;
+    }
+    else if (typeof skip === 'function') {
+        callback = skip;
+        skip = undefined;
+    }
+
     var params = undefined;
 
     if (limit) {
@@ -643,6 +693,16 @@ ApiClient.prototype.listOwnedAssets = function (limit, skip, callback) {
 //    skip: [Number]       - (optional, default: 0) Number of list items that should be skipped (from beginning of list) and not returned
 //    callback: [Function] - Callback function
 ApiClient.prototype.listIssuedAssets = function (limit, skip, callback) {
+    if (typeof limit === 'function') {
+        callback = limit;
+        limit = undefined;
+        skip = undefined;
+    }
+    else if (typeof skip === 'function') {
+        callback = skip;
+        skip = undefined;
+    }
+
     var params = undefined;
 
     if (limit) {
@@ -685,6 +745,16 @@ ApiClient.prototype.listIssuedAssets = function (limit, skip, callback) {
 //                                       Note: if a string is passed, it should be an ISO8601 formatted date/time
 //    callback: [Function]      - Callback function
 ApiClient.prototype.retrieveAssetIssuanceHistory = function (assetId, startDate, endDate, callback) {
+    if (typeof startDate === 'function') {
+        callback = startDate;
+        startDate = undefined;
+        endDate = undefined;
+    }
+    else if (typeof endDate === 'function') {
+        callback = endDate;
+        endDate = undefined;
+    }
+
     var params = {
         url: [
             assetId
@@ -737,6 +807,16 @@ ApiClient.prototype.retrieveAssetIssuanceHistory = function (assetId, startDate,
 //    skip: [Number]       - (optional, default: 0) Number of list items that should be skipped (from beginning of list) and not returned
 //    callback: [Function] - Callback function
 ApiClient.prototype.listAssetHolders = function (assetId, limit, skip, callback) {
+    if (typeof limit === 'function') {
+        callback = limit;
+        limit = undefined;
+        skip = undefined;
+    }
+    else if (typeof skip === 'function') {
+        callback = skip;
+        skip = undefined;
+    }
+
     var params = {
         url: [
             assetId
