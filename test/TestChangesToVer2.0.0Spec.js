@@ -1,8 +1,8 @@
-var readline = require('readline');
-var CatenisApiClient = require('catenis-api-client');
-var CatenisApiError = require('catenis-api-client/lib/CatenisApiError');
-
 xdescribe('Test changes to Catenis API client ver. 2.0.0.', function  () {
+    var readline = require('readline');
+    var CatenisApiClient = require('catenis-api-client');
+    var CatenisApiError = require('catenis-api-client/lib/CatenisApiError');
+
     var rl;
     var device1 = {
         id: 'd8YpQ7jgPBJEkBrnvp58'
