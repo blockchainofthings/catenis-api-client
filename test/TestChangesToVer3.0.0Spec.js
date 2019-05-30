@@ -1,4 +1,4 @@
-describe('Test changes to Catenis API client ver. 3.0.0.', function  () {
+xdescribe('Test changes to Catenis API client ver. 3.0.0.', function  () {
     var readline = require('readline');
     var CatenisApiClient = require('catenis-api-client');
 

@@ -1,2 +1,4 @@
 .idea/
 test/
+.nvmrc
+.DS_Store
