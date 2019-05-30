@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.1.0] - 2019-05-29
+
+### New features
+- WebSocket notification channel object emits new `open` event.
+
+### Changes
+- Update dependency module `request` to its latest available version (2.88.0)
+
 ## [3.0.0] - 2019-03-13
 
 ### Breaking changes
