@@ -2,7 +2,8 @@
 
 This module is used to make it easier to access the Catenis Enterprise API services from Node.js applications.
 
-This current release (3.0.0) targets version 0.7 of the Catenis Enterprise API.
+This current release (3.1.0) targets version 0.7 of the Catenis Enterprise API and version 0.2 of the WebSocket
+notification message dispatcher.
 
 ## Installation
 
