@@ -27,6 +27,17 @@ var ctnApiClient = new CatenisApiClient(deviceId, apiAccessSecret, {
 });
 ```
 
+#### Constructor options
+
+The following options can be used when instantiating the client:
+
+- **host** \[String\] - (optional, default: <b>*'catenis.io'*</b>) Host name (with optional port) of target Catenis API server.
+- **environment** \[String\] - (optional, default: <b>*'prod'*</b>) Environment of target Catenis API server. Valid values: *'prod'*, *'sandbox'*.
+- **secure** \[Boolean\] - (optional, default: ***true***) Indicates whether a secure connection (HTTPS) should be used.
+- **version** \[String\] - (optional, default: <b>*'0.7'*</b>) Version of Catenis API to target.
+- **useCompression** \[Boolean\] - (optional, default: ***true***) Indicates whether request/response body should be compressed.
+- **compressThreshold** \[Number\] - (optional, default: ***1024***) Minimum size, in bytes, of request body for it to be compressed.
+
 ### Returned data
 
 On successful calls to the Catenis API, the data returned by the client library methods **only** include the `data` property of the JSON

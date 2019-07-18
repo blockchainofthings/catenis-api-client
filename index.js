@@ -4,6 +4,7 @@ var moment = require('moment'),
 	heir = require('heir'),
     EventEmitter = require('events'),
     http = require('request'),
+    zlib = require('zlib'),
     WebSocket = require('ws');
 var ApiVersion = require('./lib/ApiVersion.js');
 var CatenisApiError = require('./lib/CatenisApiError.js');
@@ -25,10 +26,12 @@ var apiPath = '/api/',
 //    deviceId: [String]            - Catenis device ID
 //    apiAccessSecret: [String]     - Catenis device's API access secret
 //    options [Object] (optional) {
-//      host: [String],             - (optional, default: catenis.io) Host name (with optional port) of target Catenis API server
-//      environment: [String],      - (optional, default: 'prod') Environment of target Catenis API server. Valid values: 'prod', 'sandbox' (or 'beta')
-//      secure: [Boolean],          - (optional, default: true) Indicates whether a secure connection (HTTPS) should be used
-//      version: [String]           - (optional, default: '0.6') Version of Catenis API to target
+//      host: [String],              - (optional, default: 'catenis.io') Host name (with optional port) of target Catenis API server
+//      environment: [String],       - (optional, default: 'prod') Environment of target Catenis API server. Valid values: 'prod', 'sandbox' (or 'beta')
+//      secure: [Boolean],           - (optional, default: true) Indicates whether a secure connection (HTTPS) should be used
+//      version: [String],           - (optional, default: '0.7') Version of Catenis API to target
+//      useCompression: [Boolean],   - (optional, default: true) Indicates whether request/response body should be compressed
+//      compressThreshold: [Number], - (optional, default: 1024) Minimum size, in bytes, of request body for it to be compressed
 //    }
 function ApiClient(deviceId, apiAccessSecret, options) {
     var _host = 'catenis.io';
@@ -36,11 +39,22 @@ function ApiClient(deviceId, apiAccessSecret, options) {
     var _secure = true;
     var _version = '0.7';
 
+    this.useCompression = true;
+    this.compressThreshold = 1024;
+
     if (typeof options === 'object' && options !== null) {
         _host = typeof options.host === 'string' && options.host.length > 0 ? options.host : _host;
         _subdomain = options.environment === 'sandbox' || options.environment === 'beta' ? 'sandbox.' : _subdomain;
         _secure = typeof options.secure === 'boolean' ? options.secure : _secure;
         _version = typeof options.version === 'string' && options.version.length > 0 ? options.version : _version;
+
+        if (typeof options.useCompression === 'boolean' && !options.useCompression) {
+            this.useCompression = false;
+        }
+
+        if (typeof options.compressThreshold == 'number' && options.compressThreshold >= 0) {
+            this.compressThreshold = Math.floor(options.compressThreshold);
+        }
     }
 
     var _apiVer = new ApiVersion(_version);
@@ -961,11 +975,44 @@ function postRequest(methodPath, params, data, result) {
         data: JSON.stringify(data)
     };
 
+    if (this.useCompression) {
+        reqParams.gzip = true;
+
+        signParams.headers = {
+            'Accept-Encoding': 'deflate'
+        };
+
+        if (Buffer.byteLength(signParams.data) >= this.compressThreshold) {
+            // Avoid automatic request body conversion to JSON (though it will also
+            //  disable the automatic response body conversion from JSON)
+            reqParams.json = false;
+
+            signParams.headers['Content-Type'] = 'application/json';
+            signParams.headers['Content-Encoding'] = 'deflate';
+
+            signParams.data = reqParams.body = zlib.deflateSync(signParams.data);
+        }
+    }
+
     signRequest.call(this, signParams);
 
     reqParams.headers = signParams.headers;
 
     http.post(reqParams, function (err, res, body) {
+        if (!reqParams.json && body) {
+            // Convert body from JSON manually if automatic conversion had been disabled
+            var parsedBody;
+
+            try {
+                parsedBody = JSON.parse(body);
+            }
+            catch (err) {}
+
+            if (typeof parsedBody === 'object') {
+                body = parsedBody;
+            }
+        }
+
         if (err || res.statusCode !== 200) {
             var error;
             if (err) {
@@ -992,6 +1039,14 @@ function getRequest(methodPath, params, result) {
         url: reqParams.url,
         type: 'GET'
     };
+
+    if (this.useCompression) {
+        reqParams.gzip = true;
+
+        signParams.headers = {
+            'Accept-Encoding': 'deflate'
+        };
+    }
 
     signRequest.call(this, signParams);
 
