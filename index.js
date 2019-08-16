@@ -6,7 +6,6 @@ var moment = require('moment'),
     http = require('request'),
     zlib = require('zlib'),
     WebSocket = require('ws');
-var ApiVersion = require('./lib/ApiVersion.js');
 var CatenisApiError = require('./lib/CatenisApiError.js');
 
 var apiPath = '/api/',
@@ -29,7 +28,7 @@ var apiPath = '/api/',
 //      host: [String],              - (optional, default: 'catenis.io') Host name (with optional port) of target Catenis API server
 //      environment: [String],       - (optional, default: 'prod') Environment of target Catenis API server. Valid values: 'prod', 'sandbox' (or 'beta')
 //      secure: [Boolean],           - (optional, default: true) Indicates whether a secure connection (HTTPS) should be used
-//      version: [String],           - (optional, default: '0.7') Version of Catenis API to target
+//      version: [String],           - (optional, default: '0.8') Version of Catenis API to target
 //      useCompression: [Boolean],   - (optional, default: true) Indicates whether request/response body should be compressed
 //      compressThreshold: [Number], - (optional, default: 1024) Minimum size, in bytes, of request body for it to be compressed
 //    }
@@ -37,7 +36,7 @@ function ApiClient(deviceId, apiAccessSecret, options) {
     var _host = 'catenis.io';
     var _subdomain = '';
     var _secure = true;
-    var _version = '0.7';
+    var _version = '0.8';
 
     this.useCompression = true;
     this.compressThreshold = 1024;
@@ -57,11 +56,6 @@ function ApiClient(deviceId, apiAccessSecret, options) {
         }
     }
 
-    var _apiVer = new ApiVersion(_version);
-    // Determine notification service version to use based on API version
-    var _notifyServiceVer = _apiVer.gte('0.6') ? (_apiVer.gte('0.7') ? '0.3' : '0.2') : '0.1';
-    var _notifyWSDispatcherVer = '0.2';
-
     this.host = _subdomain + _host;
     var uriPrefix = (_secure ? 'https://' : 'http://') + this.host;
     var apiBaseUriPath = apiPath + _version + '/';
@@ -72,8 +66,7 @@ function ApiClient(deviceId, apiAccessSecret, options) {
     this.lastSignKey = undefined;
     var wsUriScheme = _secure ? 'wss://' : 'ws://';
     var wsUriPrefix = wsUriScheme + this.host;
-    var qualifiedNotifyRooPath = apiPath + notifyRootPath;
-    var wsNtfyBaseUriPath = qualifiedNotifyRooPath + '/' + _notifyServiceVer + (wsNtfyRootPath.length > 0 ? '/' : '') + wsNtfyRootPath + '/' + _notifyWSDispatcherVer;
+    var wsNtfyBaseUriPath = apiBaseUriPath + notifyRootPath + (wsNtfyRootPath.length > 0 ? '/' : '') + wsNtfyRootPath;
     this.rootWsNtfyEndPoint = wsUriPrefix + wsNtfyBaseUriPath;
 }
 
@@ -279,7 +272,7 @@ ApiClient.prototype.retrieveMessageProgress = function (messageId, callback) {
 // List messages
 //
 //  Parameters:
-//    options: [Object] (optional) {
+//    selector: [Object] (optional) {
 //      action: [String],                 - (optional, default: "any") - One of the following values specifying the action originally performed on
 //                                           the messages intended to be retrieved: "log"|"send"|"any"
 //      direction: [String],              - (optional, default: "any") - One of the following values specifying the direction of the sent messages
@@ -311,31 +304,46 @@ ApiClient.prototype.retrieveMessageProgress = function (messageId, callback) {
 //                                           the device that issued the request (action = "send" and direction = "inbound")
 //                                           Note: if a string is passed, it should be an ISO8601 formatted date/time
 //    }
+//    limit: [Number]  - (default: 500) Maximum number of messages that should be returned
+//    skip: [Number]   - (default: 0) Number of messages that should be skipped (from beginning of list of matching messages) and not returned
 //    callback: [Function]  - Callback function
-ApiClient.prototype.listMessages = function (options, callback) {
-    if (typeof options === 'function') {
-        callback = options;
-        options = undefined;
+ApiClient.prototype.listMessages = function (selector, limit, skip, callback) {
+    if (typeof selector === 'function') {
+        callback = selector;
+        selector = undefined;
+        limit = undefined;
+        skip = undefined;
+    }
+    else if (typeof limit === 'function') {
+        callback = limit;
+        limit = undefined;
+        skip = undefined;
+    }
+    else if (typeof skip === 'function') {
+        callback = skip;
+        skip = undefined;
     }
 
-    var params = {};
+    var params = undefined;
 
-    if (options) {
-        params.query = {};
+    if (selector) {
+        params = {
+            query: {}
+        };
 
-        if (options.action) {
-            params.query.action = options.action;
+        if (selector.action) {
+            params.query.action = selector.action;
         }
 
-        if (options.direction) {
-            params.query.direction = options.direction;
+        if (selector.direction) {
+            params.query.direction = selector.direction;
         }
 
-        if (Array.isArray(options.fromDevices)) {
+        if (Array.isArray(selector.fromDevices)) {
             var fromDeviceIds = [];
             var fromDeviceProdUniqueIds = [];
 
-            options.fromDevices.forEach(function (device) {
+            selector.fromDevices.forEach(function (device) {
                 if (typeof device === 'object' && device !== null && typeof device.id === 'string' && device.id.length > 0) {
                     if (device.isProdUniqueId && !!device.isProdUniqueId) {
                         // This is actually a product unique ID. So add it to the proper list
@@ -357,11 +365,11 @@ ApiClient.prototype.listMessages = function (options, callback) {
             }
         }
 
-        if (Array.isArray(options.toDevices)) {
+        if (Array.isArray(selector.toDevices)) {
             var toDeviceIds = [];
             var toDeviceProdUniqueIds = [];
 
-            options.toDevices.forEach(function (device) {
+            selector.toDevices.forEach(function (device) {
                 if (typeof device === 'object' && device !== null && typeof device.id === 'string' && device.id.length > 0) {
                     if (device.isProdUniqueId && !!device.isProdUniqueId) {
                         // This is actually a product unique ID. So add it to the proper list
@@ -383,27 +391,47 @@ ApiClient.prototype.listMessages = function (options, callback) {
             }
         }
 
-        if (options.readState) {
-            params.query.readState = options.readState;
+        if (selector.readState) {
+            params.query.readState = selector.readState;
         }
 
-        if (options.startDate) {
-            if (typeof options.startDate === 'string' && options.startDate.length > 0) {
-                params.query.startDate = options.startDate;
+        if (selector.startDate) {
+            if (typeof selector.startDate === 'string' && selector.startDate.length > 0) {
+                params.query.startDate = selector.startDate;
             }
-            else if (options.startDate instanceof Date) {
-                params.query.startDate = options.startDate.toISOString();
+            else if (selector.startDate instanceof Date) {
+                params.query.startDate = selector.startDate.toISOString();
             }
         }
 
-        if (options.endDate) {
-            if (typeof options.endDate === 'string' && options.endDate.length > 0) {
-                params.query.endDate = options.endDate;
+        if (selector.endDate) {
+            if (typeof selector.endDate === 'string' && selector.endDate.length > 0) {
+                params.query.endDate = selector.endDate;
             }
-            else if (options.endDate instanceof Date) {
-                params.query.endDate = options.endDate.toISOString();
+            else if (selector.endDate instanceof Date) {
+                params.query.endDate = selector.endDate.toISOString();
             }
         }
+    }
+
+    if (limit) {
+        if (!params) {
+            params = {
+                query: {}
+            };
+        }
+
+        params.query.limit = limit;
+    }
+
+    if (skip) {
+        if (!params) {
+            params = {
+                query: {}
+            };
+        }
+
+        params.query.skip = skip;
     }
 
     var procFunc = processReturn.bind(undefined, callback);
@@ -835,16 +863,31 @@ ApiClient.prototype.listIssuedAssets = function (limit, skip, callback) {
 //                                       which the issuance events intended to be retrieved have occurred. The returned
 //                                       issuance events must have occurred not after that date/time
 //                                       Note: if a string is passed, it should be an ISO8601 formatted date/time
+//    limit: [Number] - (default: 500) Maximum number of asset issuance events that should be returned
+//    skip: [Number]  - (default: 0) Number of asset issuance events that should be skipped (from beginning of list of matching events) and not returned
 //    callback: [Function]      - Callback function
-ApiClient.prototype.retrieveAssetIssuanceHistory = function (assetId, startDate, endDate, callback) {
+ApiClient.prototype.retrieveAssetIssuanceHistory = function (assetId, startDate, endDate, limit, skip, callback) {
     if (typeof startDate === 'function') {
         callback = startDate;
         startDate = undefined;
         endDate = undefined;
+        limit = undefined;
+        skip = undefined;
     }
     else if (typeof endDate === 'function') {
         callback = endDate;
         endDate = undefined;
+        limit = undefined;
+        skip = undefined;
+    }
+    else if (typeof limit === 'function') {
+        callback = limit;
+        limit = undefined;
+        skip = undefined;
+    }
+    else if (typeof skip === 'function') {
+        callback = skip;
+        skip = undefined;
     }
 
     var params = {
@@ -881,6 +924,22 @@ ApiClient.prototype.retrieveAssetIssuanceHistory = function (assetId, startDate,
 
             params.query.endDate = endDate.toISOString();
         }
+    }
+
+    if (limit) {
+        if (!params.query) {
+            params.query = {};
+        }
+
+        params.query.limit = limit;
+    }
+
+    if (skip) {
+        if (!params.query) {
+            params.query = {};
+        }
+
+        params.query.skip = skip;
     }
 
     var procFunc = processReturn.bind(undefined, callback);
