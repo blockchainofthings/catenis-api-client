@@ -13,7 +13,7 @@
 - Changed interface of *retrieveAssetIssuanceHistory* method: new parameters `limit` and `skip` added.
 
 ### New features
-- Added options (when instantiating API client) to send compressed data, which is on by default.
+- Added options (when instantiating API client) to send/receive compressed data, which is on by default.
 - Added support for changes introduced by version 0.8 of the Catenis Enterprise API: "pagination" (limit/skip) for API
  methods List Messages and Retrieve Asset Issuance History; new URI format for notification endpoints.
 
