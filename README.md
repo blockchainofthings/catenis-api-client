@@ -642,7 +642,7 @@ ctnApiClient.retrieveAssetIssuanceHistory(assetId, '20170101T000000Z', null, 200
 ```
 
 > **Note**: the parameters of the *retrieveAssetIssuanceHistory* method are slightly different than the ones taken by
->the Retrieve Asset Issuance History Catenis API method. In particular, the date fields, `startDate` and `endDate`,
+>the Retrieve Asset Issuance History Catenis API method. In particular, the date parameters, `startDate` and `endDate`,
 >accept not only strings containing ISO8601 formatted dates/times but also *Date* objects.
 
 ### Listing devices that currently hold any amount of a given asset
