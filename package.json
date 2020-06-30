@@ -28,6 +28,6 @@
     "url": "https://github.com/blockchainofthings/CatenisAPIClientNodeJS.git"
   },
   "devDependencies": {
-    "jasmine": "^3.3.0"
+    "jasmine": "^3.5.0"
   }
 }
