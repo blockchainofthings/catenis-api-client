@@ -1,8 +1,8 @@
 # Catenis API Client for Node.js
 
-This module is used to make it easier to access the Catenis Enterprise API services from Node.js applications.
+This module is used to make it easier to access the Catenis API services from Node.js applications.
 
-This current release (5.1.0) targets version 0.10 of the Catenis Enterprise API.
+This current release (5.1.0) targets version 0.10 of the Catenis API.
 
 ## Installation
 
@@ -1254,9 +1254,9 @@ Catenis error message: Invalid message ID
 Compiled error message: Error returned from Catenis API endpoint: [400] Invalid message ID
 ```
 
-## Catenis Enterprise API Documentation
+## Catenis API Documentation
 
-For further information on the Catenis Enterprise API, please reference the [Catenis Enterprise API Documentation](https://catenis.com/docs/api).
+For further information on the Catenis API, please reference the [Catenis API Documentation](https://catenis.com/docs/api).
 
 ## License
 
