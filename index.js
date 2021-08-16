@@ -1058,7 +1058,7 @@ ApiClient.prototype.listAssetHolders = function (assetId, limit, skip, callback)
 //    }
 //    options: {           - (optional)
 //      consumptionProfile: [String],  - (optional) Name of the foreign blockchain's native coin consumption profile
-//                                        to use. Valid options: fastest, fast, average, slow
+//                                        to use. Valid options: 'fastest', 'fast', 'average', 'slow'
 //      estimateOnly: [Boolean]        - (optional, default: false) Indicates that no asset export should be done.
 //                                        Instead, only the estimated price (in the foreign blockchain's native
 //                                        coin) to fulfill the operation should be returned
@@ -1108,7 +1108,7 @@ ApiClient.prototype.exportAsset = function (assetId, foreignBlockchain, token, o
 //    }
 //    options: {           - (optional)
 //      consumptionProfile: [String],  - (optional) Name of the foreign blockchain's native coin consumption profile
-//                                        to use. Valid options: fastest, fast, average, slow
+//                                        to use. Valid options: 'fastest', 'fast', 'average', 'slow'
 //      estimateOnly: [Boolean]        - (optional, default: false) Indicates that no asset export should be done.
 //                                        Instead, only the estimated price (in the foreign blockchain's native
 //                                        coin) to fulfill the operation should be returned
@@ -1195,7 +1195,7 @@ ApiClient.prototype.assetMigrationOutcome = function (migrationId, callback) {
 //                                       has been exported. Valid options: 'ethereum', 'binance', 'polygon'
 //      tokenSymbol: [String],        - (optional) The symbol of the resulting foreign token
 //      status: [String],             - (optional) A single status or a comma-separated list of statuses to include.
-//                                       Valid options: pending, success, error
+//                                       Valid options: 'pending', 'success, 'error'
 //      negateStatus: [Boolean],      - (optional, default: false) Boolean value indicating whether the specified
 //                                       statuses should be excluded instead
 //      startDate: [Date|String],     - (optional) Date and time specifying the inclusive lower bound of the time
@@ -1313,7 +1313,7 @@ ApiClient.prototype.listExportedAssets = function (selector, limit, skip, callba
 //      direction: [String],          - (optional) The direction of the migration. Valid options: 'outward',
 //                                       'inward'
 //      status: [String],             - (optional) A single status or a comma-separated list of statuses to include.
-//                                       Valid options: pending, success, error
+//                                       Valid options: 'pending', 'success', 'error'
 //      negateStatus: [Boolean],      - (optional, default: false) Boolean value indicating whether the specified
 //                                       statuses should be excluded instead
 //      startDate: [Date|String],     - (optional) Date and time specifying the inclusive lower bound of the time
