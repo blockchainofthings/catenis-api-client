@@ -1882,4 +1882,4 @@ For further information on the Catenis API, please reference the [Catenis API Do
 
 This Node.js module is released under the [MIT License](LICENSE). Feel free to fork, and modify!
 
-Copyright © 2018-2021, Blockchain of Things Inc.
+Copyright © 2018-2022, Blockchain of Things Inc.
