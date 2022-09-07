@@ -2,7 +2,7 @@
 
 This module is used to make it easier to access the Catenis API services from Node.js applications.
 
-This current release (6.0.0) targets version 0.12 of the Catenis API.
+This current release (7.0.0) targets version 0.12 of the Catenis API.
 
 ## Installation
 
