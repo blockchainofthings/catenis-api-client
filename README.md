@@ -1295,8 +1295,21 @@ ctnApiClient.retrieveAssetIssuanceHistory(assetId, '20170101T000000Z', null, 200
             // Process returned data
             data.issuanceEvents.forEach(function (issuanceEvent, idx) {
                 console.log('Issuance event #', idx + 1, ':');
-                console.log('  - issued amount:', issuanceEvent.amount);
-                console.log('  - device to which issued amount had been assigned:', issuanceEvent.holdingDevice);
+
+                if (!issuanceEvent.nfTokenIds) {
+                 console.log('  - issued amount:', issuanceEvent.amount);
+                }
+                else {
+                 console.log('  - IDs of issued non-fungible tokens:', issuanceEvent.nfTokenIds);
+                }
+   
+                if (!issuanceEvent.holdingDevices) {
+                 console.log('  - device to which issued amount has been assigned:', issuanceEvent.holdingDevice);
+                }
+                else {
+                 console.log('  - devices to which issued non-fungible tokens have been assigned:', issuanceEvent.holdingDevices);
+                }
+
                 console.log('  - date of issuance:', issuanceEvent.date);
             });
 
