@@ -193,7 +193,7 @@ describe('Test changes to Catenis API client ver. 7.0.0.', function  () {
 
             // Initial call to issue non-fungible token
             apiClient.issueNonFungibleAsset({
-                    assetInfo: {
+                assetInfo: {
                     name: 'TSTNFA#' + assetNumber,
                     description: 'Test non-fungible asset #' + assetNumber,
                     canReissue: true
