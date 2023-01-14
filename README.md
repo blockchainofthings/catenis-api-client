@@ -4,6 +4,11 @@ This module is used to make it easier to access the Catenis API services from No
 
 This current release (7.1.0) targets version 0.13 of the Catenis API.
 
+## Notice of deprecation
+
+This module has been **DEPRECATED** in favor of a new library, namely [Catenis API Client for (Modern) JavaScript](https://github.com/blockchainofthings/catenis-api-client-js-modern),
+that makes use of modern JavaScript constructs and Web APIs.
+
 ## Installation
 
 ```shell
